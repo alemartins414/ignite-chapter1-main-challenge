@@ -1,69 +1,39 @@
 import React from 'react';
-import { FlatList, Image, TouchableOpacity, View, Text, StyleSheet, FlatListProps } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import { FlatList, StyleSheet } from 'react-native';
 
-import { ItemWrapper } from './ItemWrapper';
-
-import trashIcon from '../assets/icons/trash/trash.png'
-
+import { TaskListItem } from './TaskListItem';
 export interface Task {
   id: number;
   title: string;
+  editing?: boolean;
   done: boolean;
 }
 
-interface TasksListProps {
+export interface TasksListProps {
   tasks: Task[];
   toggleTaskDone: (id: number) => void;
   removeTask: (id: number) => void;
+  toggleEditTask: (id: number) => void;
+  editTask: (id: number, newTitle: string) => void;
 }
 
-export function TasksList({ tasks, toggleTaskDone, removeTask }: TasksListProps) {
+export function TasksList({ tasks, toggleTaskDone, removeTask, editTask, toggleEditTask }: TasksListProps) {
   return (
     <FlatList
-      // data={tasks}
+      data={tasks}
       keyExtractor={item => String(item.id)}
       contentContainerStyle={{ paddingBottom: 24 }}
       showsVerticalScrollIndicator={false}
       renderItem={({ item, index }) => {
         return (
-          <ItemWrapper index={index}>
-            <View>
-              <TouchableOpacity
-                testID={`button-${index}`}
-                activeOpacity={0.7}
-                style={styles.taskButton}
-                //TODO - use onPress (toggle task) prop
-              >
-                <View 
-                  testID={`marker-${index}`}
-                  //TODO - use style prop 
-                >
-                  { item.done && (
-                    <Icon 
-                      name="check"
-                      size={12}
-                      color="#FFF"
-                    />
-                  )}
-                </View>
-
-                <Text 
-                  //TODO - use style prop
-                >
-                  {item.title}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity
-              testID={`trash-${index}`}
-              style={{ paddingHorizontal: 24 }}
-              //TODO - use onPress (remove task) prop
-            >
-              <Image source={trashIcon} />
-            </TouchableOpacity>
-          </ItemWrapper>
+          <TaskListItem
+            task={item}
+            index={index}
+            toggleTaskDone={toggleTaskDone}
+            removeTask={removeTask}
+            editTask={editTask}
+            toggleEditTask={toggleEditTask}
+          />
         )
       }}
       style={{
@@ -95,7 +65,8 @@ const styles = StyleSheet.create({
   },
   taskText: {
     color: '#666',
-    fontFamily: 'Inter-Medium'
+    fontFamily: 'Inter-Medium',
+    marginRight: 150
   },
   taskMarkerDone: {
     height: 16,
@@ -109,6 +80,7 @@ const styles = StyleSheet.create({
   taskTextDone: {
     color: '#1DB863',
     textDecorationLine: 'line-through',
-    fontFamily: 'Inter-Medium'
+    fontFamily: 'Inter-Medium',
+    marginRight: 150
   }
 })
